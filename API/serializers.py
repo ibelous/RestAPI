@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Lecture, Course, HomeWork, HomeTasks
+from .models import User, Lecture, Course, HomeWork, HomeTask, WorkRate, RateComment
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -27,26 +27,34 @@ class UserSerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ('id', 'users', 'name')
-        read_only_fields = ('id',)
+        fields = ('id', 'users', 'name', 'lectures')
+        read_only_fields = ('id', 'lectures')
 
 
 class LectureSerializer(serializers.ModelSerializer):
+    # course = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = Lecture
-        fields = ('id', 'course', 'topic', 'presentation')
+        fields = ('id', 'course', 'topic', 'presentation', 'hometasks')
 
 
 class HomeTaskSerializer(serializers.ModelSerializer):
     class Meta:
-        model = HomeTasks
-        fields = ('id', 'lecture', 'text')
+        model = HomeTask
+        fields = ('id', 'lecture', 'text', 'homeworks')
 
 
 class HomeWorkSerializer(serializers.ModelSerializer):
     class Meta:
         model = HomeWork
-        fields = ('id', 'task', 'student', 'work',)
+        fields = ('id', 'task', 'student', 'work')
+
+
+class RateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkRate
+        fields = ('id', 'work', 'rate', 'comments')
 
 
 

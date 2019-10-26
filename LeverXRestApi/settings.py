@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_registration',
     'rest_framework.authtoken',
     'rest_auth',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -141,8 +142,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ],
 }
 
