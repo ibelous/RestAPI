@@ -48,7 +48,7 @@ class WorkRate(models.Model):
     rate = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self):
-        return self.rate
+        return str(self.rate)
 
 
 class RateComment(models.Model):

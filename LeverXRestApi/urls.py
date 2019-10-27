@@ -17,75 +17,59 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
 from API import views
+from django.conf.urls import url
+from rest_framework_swagger.views import get_swagger_view
 from rest_framework import permissions
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
 
 
-schema_view = get_schema_view(
-    openapi.Info(
-        title="Classroom API",
-        default_version='v1',
-        description="Test description",
-        terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="contact@snippets.local"),
-        license=openapi.License(name="BSD License"),
-    ),
-    public=True,
-    permission_classes=(permissions.AllowAny,),
-)
 
 router = routers.DefaultRouter()
 # router.register(r'users', views.UserList)
+schema_view = get_swagger_view(title='Classroom API')
 
-
-api_urlpatterns = [
-    path('accounts/', include('rest_registration.api.urls')),
-]
 
 comments_patterns = [
-    path('comments/', views.HomeWorkRateRU.as_view()),
+    path('comments/create/', views.CommentCreate.as_view()),
+    path('comments/', views.CommentList.as_view()),
 ]
 
 rate_patterns = [
-    path('rate/', views.HomeWorkRateRU.as_view()),
+    path('rate/create/', views.HomeWorkRateCreate.as_view()),
+    path('rate/', views.HomeWorkRateR.as_view()),
     path('rate/', include(comments_patterns)),
 ]
 
 homeworks_patterns = [
     path('homeworks/create/', views.HomeWorkCreate.as_view()),
     path('homeworks/', views.HomeWorkList.as_view()),
-    path('homeworks/<int:homework_id>/', views.HomeWorkRUD.as_view()),
+    path('homeworks/all/', views.AllHomeWorkList.as_view()),
+    path('homeworks/<pk>/', views.HomeWorkList.as_view()),
     path('homeworks/<int:homework_id>/', include(rate_patterns)),
 ]
 
 hometasks_patterns = [
     path('hometasks/create/', views.HomeTaskCreate.as_view()),
     path('hometasks/', views.HomeTaskList.as_view()),
-    path('hometasks/<int:hometask_id>/', views.HomeTaskRUD.as_view()),
+    path('hometasks/<pk>/', views.HomeTaskList.as_view()),
     path('hometasks/<int:hometask_id>/', include(homeworks_patterns)),
 ]
 
 lectures_patterns = [
     path('lectures/create/', views.LectureCreate.as_view()),
     path('lectures/', views.LectureList.as_view()),
-    path('lectures/<int:lecture_id>/', views.LectureRUD.as_view()),
+    path('lectures/<pk>/', views.LectureRUD.as_view()),
     path('lectures/<int:lecture_id>/', include(hometasks_patterns)),
 ]
 
 urlpatterns = [
-    path(r'^swagger(?P<format>\.json|\.yaml)$',
-        schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0),
-        name='schema-swagger-ui'),
+    url(r'^$', schema_view),
     path('admin/', admin.site.urls),
-    path('api/v1/', include(api_urlpatterns)),
     # path('', include(router.urls)),
     path('users/', views.UserList.as_view()),
     path('registration/', views.UserRegistration.as_view()),
     path('courses/create/', views.CourseCreate.as_view()),
     path('courses/', views.CourseList.as_view()),
-    path('courses/<int:course_id>/', views.CourseRUD.as_view()),
+    path('courses/<pk>/', views.CourseRUD.as_view()),
     path('courses/<int:course_id>/', include(lectures_patterns)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

@@ -25,12 +25,13 @@ class CourseList(generics.ListAPIView):
 class CourseCreate(generics.CreateAPIView):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
-    permission_classes = [TeacherPermissions]
+    permission_classes = (TeacherPermissions,)
 
 
 class CourseRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CourseSerializer
-    lookup_url_kwarg = 'course_id'
+    permission_classes = (IsMember,)
+    # lookup_url_kwarg = 'course_id'
 
     def get_queryset(self):
         return Course.objects.filter(users__id=self.request.user.id)
@@ -38,21 +39,22 @@ class CourseRUD(generics.RetrieveUpdateDestroyAPIView):
 
 class LectureList(generics.ListAPIView):
     serializer_class = LectureSerializer
+    permission_classes = (IsMember,)
 
     def get_queryset(self):
         return Lecture.objects.filter(course_id=self.kwargs['course_id'])
 
 
 class LectureCreate(generics.CreateAPIView):
-    lookup_url_kwarg = 'course_id'
     serializer_class = LectureSerializer
+    permission_classes = [TeacherPermissions, IsMember]
     queryset = Lecture.objects.all()
-    permission_classes = [TeacherPermissions]
 
 
 class LectureRUD(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = LectureSerializer
-    lookup_url_kwarg = 'lecture_id'
+    serializer_class = LectureRUDSerializer
+    # lookup_url_kwarg = 'lecture_id'
+    permission_classes = [TeacherPermissions, IsMember]
 
     def get_queryset(self):
         return Lecture.objects.filter(course_id=self.kwargs['course_id'])
@@ -61,42 +63,72 @@ class LectureRUD(generics.RetrieveUpdateDestroyAPIView):
 class HomeTaskCreate(generics.CreateAPIView):
     serializer_class = HomeTaskSerializer
     queryset = HomeTask.objects.all()
-    permission_classes = [TeacherPermissions]
+    permission_classes = [TeacherPermissions, IsMember]
 
 
 class HomeTaskList(generics.ListAPIView):
     serializer_class = HomeTaskSerializer
-    lookup_url_kwarg = 'lecture_id'
-    queryset = HomeTask.objects.all()
-
-
-class HomeTaskRUD(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = HomeTaskSerializer
-    lookup_url_kwarg = 'hometask_id'
+    # lookup_url_kwarg = 'hometask_id'
+    permission_classes = [IsMember]
 
     def get_queryset(self):
-        return HomeTask.objects.all()
+        return HomeTask.objects.filter(lecture__course_id=self.kwargs['course_id'],
+                                       lecture_id=self.kwargs['lecture_id'])
 
 
 class HomeWorkCreate(generics.CreateAPIView):
     serializer_class = HomeWorkSerializer
     queryset = HomeWork.objects.all()
+    permission_classes = [IsMember]
 
 
 class HomeWorkList(generics.ListAPIView):
     serializer_class = HomeWorkSerializer
-    queryset = HomeWork.objects.all()
-
-
-class HomeWorkRUD(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = HomeWorkSerializer
-    lookup_url_kwarg = 'homework_id'
+    permission_classes = [IsMember]
 
     def get_queryset(self):
-        return HomeWork.objects.all()
+        return HomeWork.objects.filter(task_id=self.kwargs['hometask_id'],
+                                       student=self.request.user)
 
 
-class HomeWorkRateRU(generics.RetrieveUpdateAPIView):
+class AllHomeWorkList(generics.ListAPIView):
+    serializer_class = HomeWorkSerializer
+    permission_classes = [IsMember, TeacherPermissions]
+
+    def get_queryset(self):
+        return HomeWork.objects.filter(task_id=self.kwargs['hometask_id'])
+
+
+class HomeWorkRateCreate(generics.CreateAPIView):
     serializer_class = RateSerializer
-    lookup_url_kwarg = 'homework_id'
+    # lookup_url_kwarg = 'homework_id'
     queryset = WorkRate.objects.all()
+    permission_classes = [IsMember]
+
+
+class HomeWorkRateR(generics.RetrieveAPIView):
+    serializer_class = RateSerializer
+    # lookup_url_kwarg = 'homework_id'
+    queryset = WorkRate.objects.all()
+    permission_classes = [IsMember, MyHomeWork]
+
+    def get_home_id_kwarg(self):
+        return self.kwargs['homework_id']
+
+
+class CommentCreate(generics.CreateAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [IsMember, MyHomeWork]
+    # lookup_url_kwarg = 'homework_id'
+
+    def get_queryset(self):
+        return RateComment.objects.all()
+
+
+class CommentList(generics.ListAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [IsMember, MyHomeWork]
+    # lookup_url_kwarg = 'homework_id'
+
+    def get_queryset(self):
+        return RateComment.objects.all()

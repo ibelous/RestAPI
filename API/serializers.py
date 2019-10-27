@@ -36,7 +36,15 @@ class LectureSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lecture
-        fields = ('id', 'course', 'topic', 'presentation', 'hometasks')
+        fields = ('id', 'topic', 'presentation', 'hometasks', 'course', )
+        # read_only_fields = ('course',)
+
+
+class LectureRUDSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Lecture
+        fields = ('id', 'topic', 'presentation', 'hometasks')
 
 
 class HomeTaskSerializer(serializers.ModelSerializer):
@@ -57,5 +65,9 @@ class RateSerializer(serializers.ModelSerializer):
         fields = ('id', 'work', 'rate', 'comments')
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RateComment
+        fields = ('id', 'rate', 'author', 'comment')
 
 
