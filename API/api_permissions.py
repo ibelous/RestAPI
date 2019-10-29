@@ -22,4 +22,4 @@ class MyHomeWork(permissions.BasePermission):
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False
-        return HomeWork.objects.filter(student=request.user,) or request.user.user_type == 2
+        return HomeWork.objects.filter(student=request.user, ) or request.user.user_type == 2

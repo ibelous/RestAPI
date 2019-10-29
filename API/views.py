@@ -101,25 +101,24 @@ class AllHomeWorkList(generics.ListAPIView):
 
 class HomeWorkRateCreate(generics.CreateAPIView):
     serializer_class = RateSerializer
-    # lookup_url_kwarg = 'homework_id'
+    lookup_url_kwarg = 'homework_id'
     queryset = WorkRate.objects.all()
     permission_classes = [IsMember]
 
 
-class HomeWorkRateR(generics.RetrieveAPIView):
+class HomeWorkRateR(generics.ListAPIView):
     serializer_class = RateSerializer
-    # lookup_url_kwarg = 'homework_id'
-    queryset = WorkRate.objects.all()
+    lookup_url_kwarg = 'homework_id'
     permission_classes = [IsMember, MyHomeWork]
 
-    def get_home_id_kwarg(self):
-        return self.kwargs['homework_id']
+    def get_queryset(self):
+        return WorkRate.objects.filter(work=HomeWork.objects.get(id=self.kwargs['homework_id']))
 
 
 class CommentCreate(generics.CreateAPIView):
     serializer_class = CommentSerializer
     permission_classes = [IsMember, MyHomeWork]
-    # lookup_url_kwarg = 'homework_id'
+    lookup_url_kwarg = 'homework_id'
 
     def get_queryset(self):
         return RateComment.objects.all()
@@ -131,4 +130,4 @@ class CommentList(generics.ListAPIView):
     # lookup_url_kwarg = 'homework_id'
 
     def get_queryset(self):
-        return RateComment.objects.all()
+        return RateComment.objects.filter(rate=HomeWork.objects.get(id=self.kwargs['homework_id']).rate)
