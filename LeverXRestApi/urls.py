@@ -43,7 +43,7 @@ homeworks_patterns = [
     path('homeworks/create/', views.HomeWorkCreate.as_view()),
     path('homeworks/', views.HomeWorkList.as_view()),
     path('homeworks/all/', views.AllHomeWorkList.as_view()),
-    path('homeworks/<pk>/', views.HomeWorkList.as_view()),
+    path('homeworks/<int:homework_id>/', views.HomeWorkRU.as_view()),
     path('homeworks/<int:homework_id>/', include(rate_patterns)),
 ]
 
@@ -69,7 +69,7 @@ urlpatterns = [
     path('registration/', views.UserRegistration.as_view()),
     path('courses/create/', views.CourseCreate.as_view()),
     path('courses/', views.CourseList.as_view()),
-    path('courses/<pk>/', views.CourseRUD.as_view()),
+    path('courses/<int:course_id>/', views.CourseRUD.as_view()),
     path('courses/<int:course_id>/', include(lectures_patterns)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
