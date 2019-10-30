@@ -15,16 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from rest_framework import routers
 from API import views
 from django.conf.urls import url
 from rest_framework_swagger.views import get_swagger_view
-from rest_framework import permissions
 
 
-
-router = routers.DefaultRouter()
-# router.register(r'users', views.UserList)
 schema_view = get_swagger_view(title='Classroom API')
 
 
@@ -64,12 +59,11 @@ lectures_patterns = [
 urlpatterns = [
     url(r'^$', schema_view),
     path('admin/', admin.site.urls),
-    # path('', include(router.urls)),
     path('users/', views.UserList.as_view()),
     path('registration/', views.UserRegistration.as_view()),
     path('courses/create/', views.CourseCreate.as_view()),
     path('courses/', views.CourseList.as_view()),
-    path('courses/<int:course_id>/', views.CourseRUD.as_view()),
+    path('courses/<pk>/', views.CourseRUD.as_view()),
     path('courses/<int:course_id>/', include(lectures_patterns)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

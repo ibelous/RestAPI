@@ -31,7 +31,7 @@ class CourseCreate(generics.CreateAPIView):
 class CourseRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CourseSerializer
     permission_classes = [IsMember, TeacherPermissionsOrReadOnly]
-    lookup_url_kwarg = 'course_id'
+    # lookup_url_kwarg = 'course_id'
 
     def get_queryset(self):
         return Course.objects.filter(users__id=self.request.user.id)

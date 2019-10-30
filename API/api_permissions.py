@@ -5,6 +5,8 @@ from .models import Course, HomeWork, RateComment, WorkRate
 class TeacherPermissionsOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         user = request.user
+        if user.is_staff:
+            return True
         if request.method in permissions.SAFE_METHODS:
             return True
         if user.is_authenticated and user.user_type == 2:
@@ -15,6 +17,8 @@ class TeacherPermissionsOrReadOnly(permissions.BasePermission):
 class TeacherPermissions(permissions.BasePermission):
     def has_permission(self, request, view):
         user = request.user
+        if user.is_staff:
+            return True
         if user.is_authenticated and user.user_type == 2:
             return True
         return False
@@ -25,6 +29,9 @@ class IsMember(permissions.BasePermission):
         if not request.user.is_authenticated:
             return False
         user = request.user
+        # print(view.kwargs)
+        if user.is_staff:
+            return True
         if view.kwargs.get('course_id'):
             course_id = view.kwargs['course_id']
             return Course.objects.filter(users=user, id=course_id)
@@ -36,6 +43,8 @@ class IsMember(permissions.BasePermission):
 
 class MyHomeWork(permissions.BasePermission):
     def has_permission(self, request, view):
+        if request.user.is_staff:
+            return True
         if view.kwargs.get('homework_id'):
             return HomeWork.objects.filter(student=request.user, id=view.kwargs['homework_id']) \
                    or request.user.user_type == 2
